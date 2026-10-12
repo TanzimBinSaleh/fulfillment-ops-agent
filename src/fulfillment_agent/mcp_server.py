@@ -8,6 +8,8 @@ propose_substitution writes a pending_approval row once the user allows the call
 
 from __future__ import annotations
 
+import os
+
 try:  # MCP Python SDK 2.x
     from mcp.server.mcpserver import MCPServer
     from mcp.server.mcpserver.exceptions import ToolError as MCPToolError
@@ -29,7 +31,9 @@ mcp = MCPServer(
     ),
 )
 
-_ctx = tools.ToolContext(settings=get_settings(), approve=lambda _: True)
+# FULFILLMENT_DRY_RUN=1 runs the policy check but never writes (used for evals over MCP).
+_ctx = tools.ToolContext(settings=get_settings(), approve=lambda _: True,
+                         dry_run=os.getenv("FULFILLMENT_DRY_RUN") == "1")
 
 
 def _wrap(fn, **kwargs) -> dict:

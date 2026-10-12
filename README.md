@@ -98,7 +98,7 @@ Claude Desktop (`claude_desktop_config.json`):
 }
 ```
 
-Over MCP the client's tool-permission prompt is the human approval step, and the policy guardrail still runs on every proposal.
+Over MCP the client's tool-permission prompt is the human approval step, and the policy guardrail still runs on every proposal. Set `FULFILLMENT_DRY_RUN=1` in the server's environment to check proposals without saving them.
 
 ## Evals
 
@@ -125,17 +125,20 @@ Every run also records input, cache-write, cache-read and output tokens, cost (f
 
 ### Results
 
-Run `fulfillment-agent eval --compare-cache` and paste the summary here. Template:
+**Blind run, 2026-10-11: Claude Sonnet 5.5 through the MCP server** ([full write-up](evals/results/2026-10-11_mcp_blind_sonnet/RESULTS.md), raw logs and per-item scores alongside it):
 
-| | Sonnet 5.5, caching on | Sonnet 5.5, caching off |
-|---|---|---|
-| Text-to-SQL execution accuracy (40) | | |
-| Substitution correct action (56) | | |
-| First-attempt policy compliance | | |
-| Cost per question | | |
-| Median latency | | |
+| Metric | Result |
+|---|---|
+| Text-to-SQL execution accuracy (40 questions) | **80.0%** (easy 83.3%, medium 87.5%, hard 66.7%) |
+| Text-to-SQL answer accuracy, graded against the answer key | **100%** (40/40) |
+| Substitutions: correct action (56 out-of-stock items) | **100%** |
+| First proposal policy-compliant | **100%** (49/49); guardrail blocked 0 |
+| Picked the policy-preferred option | 98.0% (48/49) |
+| Customer text within style rules | 100% |
 
-A full run of both suites costs a few dollars with Sonnet 5.5; run with `--limit 5` first to check your setup.
+All 8 execution-accuracy misses had the right answer in the reply; their queries returned extra context rows or formatted a timestamp differently (details in the write-up). The run was blind: the answer key was encrypted during the run and the helper agents' commands were audited. Re-score the logs with `python evals/score_mcp_run.py evals/results/2026-10-11_mcp_blind_sonnet/logs`.
+
+Cost and prompt-caching savings need the API loop: `fulfillment-agent eval --compare-cache` (a few dollars with Sonnet 5.5; try `--limit 5` first).
 
 ## Project layout
 
@@ -153,7 +156,7 @@ src/fulfillment_agent/
   evaluation.py           eval harness and report
   pricing.py              token prices and cost
   cli.py                  setup | ask | chat | eval | mcp | reset-proposals
-evals/                    gold questions and saved results
+evals/                    gold questions, saved results, score_mcp_run.py (scores runs done over MCP)
 tests/                    47 tests; the agent tests use a scripted fake client
 ```
 
