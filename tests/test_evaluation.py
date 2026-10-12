@@ -53,3 +53,18 @@ def test_summary_and_report_render():
     assert s["sql"]["usage"]["cache_hit_share_of_input"] == 90.0
     md = render_markdown([{"model": "claude-sonnet-5-5", "use_cache": True, "summary": s}])
     assert "execution accuracy **100.0%**" in md
+
+
+def test_preferred_substitute_keeps_the_same_product_when_possible(settings):
+    # e.g. out-of-stock Red Oak Gala Apples should go to another brand's Gala Apples,
+    # not to Red Oak oranges.
+    from fulfillment_agent import policy
+    hits = 0
+    for c in substitution_cases(settings):
+        if c["preferred"]:
+            ctx = policy.load_context(settings, c["order_item_id"])
+            lines = {policy.load_product(settings, s)[0]["product_line"] for s in c["compliant_options"]}
+            if ctx.original["product_line"] in lines:
+                hits += 1
+                assert policy.load_product(settings, c["preferred"])[0]["product_line"] == ctx.original["product_line"]
+    assert hits > 10

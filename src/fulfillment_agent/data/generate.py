@@ -149,6 +149,7 @@ def build_products(rng: random.Random) -> list[dict]:
                         "brand": brand,
                         "category": spec.category,
                         "subcategory": spec.subcategory,
+                        "product_line": variant,
                         "size_value": value,
                         "size_unit": unit,
                         "price": round(price, 2),

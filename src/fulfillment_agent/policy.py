@@ -29,7 +29,7 @@ Substitution policy (a proposal must satisfy every rule):
 6. The substitute's price may be at most {int(MAX_PRICE_INCREASE * 100)}% higher than the original's price.
 7. Dietary safety: if the customer has a dietary_preference (vegan, gluten_free, dairy_free), the substitute must have the matching is_<preference> flag = true. Separately, any of is_vegan, is_gluten_free, is_dairy_free that is true on the original must also be true on the substitute.
 8. Household items (category = 'household') are exempt from rule 7.
-Among compliant options prefer, in order: same brand, closest size, lowest price, store brand."""
+Among compliant options prefer, in order: same product_line (the same product from another brand or in another size), closest size, same brand, lowest price, store brand."""
 
 
 @dataclass
@@ -43,7 +43,7 @@ class SubContext:
     dietary_preference: str | None
 
 
-PRODUCT_COLS = ("sku, name, brand, category, subcategory, size_value::float, size_unit, price::float, "
+PRODUCT_COLS = ("sku, name, brand, category, subcategory, product_line, size_value::float, size_unit, price::float, "
                 "is_store_brand, is_organic, is_vegan, is_gluten_free, is_dairy_free")
 _PRODUCT_KEYS = [c.split("::")[0].strip() for c in PRODUCT_COLS.split(",")]
 

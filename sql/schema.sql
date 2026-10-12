@@ -15,6 +15,7 @@ CREATE TABLE products (
     brand           TEXT NOT NULL,
     category        TEXT NOT NULL,
     subcategory     TEXT NOT NULL,
+    product_line    TEXT NOT NULL,
     size_value      NUMERIC(8,2) NOT NULL,
     size_unit       TEXT NOT NULL,
     price           NUMERIC(8,2) NOT NULL CHECK (price > 0),
@@ -25,6 +26,7 @@ CREATE TABLE products (
     is_dairy_free   BOOLEAN NOT NULL DEFAULT FALSE
 );
 COMMENT ON TABLE products IS 'Store catalog. One row per sellable SKU.';
+COMMENT ON COLUMN products.product_line IS 'The product itself, without brand or size, e.g. Gala Apples, Spaghetti.';
 COMMENT ON COLUMN products.subcategory IS 'Fine-grained product type, e.g. milk, plant_milk, bread. Substitutes must share it.';
 COMMENT ON COLUMN products.size_unit IS 'Unit for size_value: gal, fl oz, oz, lb, ct, qt, pt.';
 

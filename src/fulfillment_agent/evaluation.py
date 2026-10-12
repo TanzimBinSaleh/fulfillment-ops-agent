@@ -148,15 +148,15 @@ def substitution_cases(settings: Settings, limit: int | None = None) -> list[dic
 
 
 def _preferred_option(settings: Settings, ctx: policy.SubContext, options: list[str]) -> str | None:
-    """The policy's tie-break order: same brand, closest size, lowest price, store brand."""
+    """The policy's tie-break order: same product line, closest size, same brand, lowest price, store brand."""
     if not options:
         return None
     o = ctx.original
     ranked = []
     for sku in options:
         c, _ = policy.load_product(settings, sku)
-        ranked.append(((c["brand"] != o["brand"], abs(math.log(c["size_value"] / o["size_value"])),
-                        c["price"], not c["is_store_brand"]), sku))
+        ranked.append(((c["product_line"] != o["product_line"], abs(math.log(c["size_value"] / o["size_value"])),
+                        c["brand"] != o["brand"], c["price"], not c["is_store_brand"]), sku))
     return min(ranked)[1]
 
 

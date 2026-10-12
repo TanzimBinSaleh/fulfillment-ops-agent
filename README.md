@@ -6,6 +6,8 @@ Store managers ask questions in plain English ("which orders due in the next two
 
 The idea comes from running a store's curbside pickup department: substitutions are the slowest, most error-prone part of the day, and one wrong substitution (dairy milk for a vegan customer) costs a customer's trust.
 
+**See [DEMO.md](DEMO.md)** for a recorded session: Claude working through a manager's afternoon via the MCP server, including 11 policy-checked substitution proposals and a guardrail refusal.
+
 > All data is synthetic and generated from a fixed seed: invented brands, invented customers, and phone numbers in the reserved 555-01xx range. No real store or customer data is used.
 
 ## What it shows
@@ -54,7 +56,7 @@ cp .env.example .env            # then put your ANTHROPIC_API_KEY in .env
 
 docker compose up -d            # PostgreSQL 16 on localhost:5432
 fulfillment-agent setup         # schema, roles, synthetic data (565 SKUs, 402 orders, 3,396 order lines)
-pytest                          # 46 tests, no API key needed
+pytest                          # 47 tests, no API key needed
 ```
 
 Ask a question, or start a session (`-v` shows each tool call and the SQL):
@@ -116,7 +118,7 @@ Results are printed and saved to `evals/results/` (a Markdown summary and a JSON
 - *correct action*: proposed when a compliant option exists, and did not when none does
 - *first-attempt compliance*: Claude's first proposal passed every policy rule, before the guardrail
 - *guardrail blocks*: proposals the code-level check refused
-- *chose preferred*: picked the policy's tie-break winner (same brand, closest size, lowest price, store brand)
+- *chose preferred*: picked the policy's tie-break winner (same product line, then closest size, same brand, lowest price, store brand)
 - *message style*: customer text under 320 characters, signed, includes a price
 
 Every run also records input, cache-write, cache-read and output tokens, cost (from the prices in [`pricing.py`](src/fulfillment_agent/pricing.py)), and median and p90 latency.
@@ -152,7 +154,7 @@ src/fulfillment_agent/
   pricing.py              token prices and cost
   cli.py                  setup | ask | chat | eval | mcp | reset-proposals
 evals/                    gold questions and saved results
-tests/                    46 tests; the agent tests use a scripted fake client
+tests/                    47 tests; the agent tests use a scripted fake client
 ```
 
 ## Limitations and next steps

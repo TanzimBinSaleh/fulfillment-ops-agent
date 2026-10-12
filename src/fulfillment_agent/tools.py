@@ -68,10 +68,10 @@ def find_substitute_candidates(ctx: ToolContext, order_item_id: int, limit: int 
             SELECT {policy.PRODUCT_COLS}, i.on_hand, i.aisle
             FROM products JOIN inventory i USING (sku)
             WHERE subcategory = %s AND sku <> %s AND i.on_hand > 0
-            ORDER BY (brand = %s) DESC, abs(size_value - %s), price
+            ORDER BY (product_line = %s) DESC, abs(size_value - %s), (brand = %s) DESC, price
             LIMIT %s
-        """, (sub.original["subcategory"], sub.original["sku"], sub.original["brand"],
-              sub.original["size_value"], limit))
+        """, (sub.original["subcategory"], sub.original["sku"], sub.original["product_line"], sub.original["size_value"],
+              sub.original["brand"], limit))
         rows = cur.fetchall()
     candidates = []
     for r in rows:
