@@ -49,7 +49,7 @@ flowchart LR
 Requirements: Python 3.10+, Docker (or any PostgreSQL 14+), and an Anthropic API key.
 
 ```bash
-git clone <your repo url> && cd fulfillment-ops-agent
+git clone https://github.com/TanzimBinSaleh/fulfillment-ops-agent.git && cd fulfillment-ops-agent
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env            # then put your ANTHROPIC_API_KEY in .env
